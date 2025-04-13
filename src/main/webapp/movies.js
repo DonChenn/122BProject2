@@ -23,13 +23,18 @@ fetch("api/movies")
         data.movies.forEach(movie => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                    <td><a href="#">${movie.title}</a></td>
-                    <td>${movie.year}</td>
-                    <td><a href="#">${movie.director}</a></td>
-                    <td>${movie.genres || ", "}</td>
-                    <td>${movie.stars || ", "}</td>
-                    <td>${movie.rating}</td>
-                `;
+                <td><a href="#">${movie.title}</a></td>
+                <td>${movie.year}</td>
+                <td>${movie.director}</td>
+                <td>${(movie.genres || "").replace(/,/g, ", ")}</td>
+                <td>${
+                    (movie.stars || "")
+                    .split(",")
+                    .map(star => `<a href="#">${star.trim()}</a>`)
+                    .join(", ")
+                }</td>
+                <td>${movie.rating}</td>
+            `;
             tableBody.appendChild(row);
         });
     })
