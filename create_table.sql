@@ -59,8 +59,7 @@ CREATE TABLE sales (
     movieId VARCHAR(10),
     saleDate DATE NOT NULL,
     FOREIGN KEY (customerId) REFERENCES customers(id),
-    FOREIGN KEY (movieId) REFERENCES movies(id),
-    UNIQUE (customerId, movieId)  -- Ensure uniqueness
+    FOREIGN KEY (movieId) REFERENCES movies(id)
 );
 
 CREATE TABLE ratings (

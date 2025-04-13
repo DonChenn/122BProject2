@@ -10,92 +10,83 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 // This annotation maps this Java Servlet Class to a URL
-@WebServlet("/stars")
+@WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
 public class MoviesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Change this to your own mysql username and password
         String loginUser = "mytestuser";
         String loginPasswd = "My6$Password";
-        String loginUrl = "jdbc:mysql://localhost:3306/moviedbexample";
+        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
 
-        // Set response mime type
-        response.setContentType("text/html");
-
-        // Get the PrintWriter for writing response
+        // Set response to JSON
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
-        out.println("<html>");
-        out.println("<head><title>Fabflix</title></head>");
-
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            // create database connection
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-            // declare statement
+
+            // Modified query to get movies with ratings, genres, and stars
+            String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
+                    "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ',') AS genres, " +
+                    "GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars " +
+                    "FROM movies m " +
+                    "JOIN ratings r ON m.id = r.movieId " +
+                    "LEFT JOIN genres_in_movies gm ON m.id = gm.movieId " +
+                    "LEFT JOIN genres g ON gm.genreId = g.id " +
+                    "LEFT JOIN stars_in_movies sm ON m.id = sm.movieId " +
+                    "LEFT JOIN stars s ON sm.starId = s.id " +
+                    "GROUP BY m.id, m.title, m.year, m.director, r.rating " +
+                    "ORDER BY r.rating DESC " +
+                    "LIMIT 20;";
+
             Statement statement = connection.createStatement();
-            // prepare query
-            String query = "SELECT * from stars limit 10";
-            // execute query
             ResultSet resultSet = statement.executeQuery(query);
 
-            out.println("<body>");
-            out.println("<h1>MovieDB Stars</h1>");
+            // Create JSON array for movies
+            StringBuilder jsonBuilder = new StringBuilder();
+            jsonBuilder.append("{\"movies\":[");
 
-            out.println("<table border>");
-
-            // Add table header row
-            out.println("<tr>");
-            out.println("<td>id</td>");
-            out.println("<td>name</td>");
-            out.println("<td>birth year</td>");
-            out.println("</tr>");
-
-            // Add a row for every star result
+            boolean first = true;
             while (resultSet.next()) {
-                // get a star from result set
-                String starID = resultSet.getString("id");
-                String starName = resultSet.getString("name");
-                String birthYear = resultSet.getString("birthyear");
+                if (!first) {
+                    jsonBuilder.append(", ");
+                }
+                first = false;
 
-                out.println("<tr>");
-                out.println("<td>" + starID + "</td>");
-                out.println("<td>" + starName + "</td>");
-                out.println("<td>" + birthYear + "</td>");
-                out.println("</tr>");
+                jsonBuilder.append("{")
+                        .append("\"id\":\"").append(escapeJson(resultSet.getString("id"))).append("\",")
+                        .append("\"title\":\"").append(escapeJson(resultSet.getString("title"))).append("\",")
+                        .append("\"year\":").append(resultSet.getInt("year")).append(",")
+                        .append("\"director\":\"").append(escapeJson(resultSet.getString("director"))).append("\",")
+                        .append("\"rating\":").append(resultSet.getDouble("rating")).append(",")
+                        .append("\"genres\":\"").append(escapeJson(resultSet.getString("genres"))).append("\",")
+                        .append("\"stars\":\"").append(escapeJson(resultSet.getString("stars"))).append("\"")
+                        .append("}");
             }
 
-            out.println("</table>");
-            out.println("</body>");
+            jsonBuilder.append("]}");
+            out.write(jsonBuilder.toString());
 
             resultSet.close();
             statement.close();
             connection.close();
 
         } catch (Exception e) {
-            /*
-             * After you deploy the WAR file through tomcat manager webpage,
-             *   there's no console to see the print messages.
-             * Tomcat append all the print messages to the file: tomcat_directory/logs/catalina.out
-             *
-             * To view the last n lines (for example, 100 lines) of messages you can use:
-             *   tail -100 catalina.out
-             * This can help you debug your program after deploying it on AWS.
-             */
             request.getServletContext().log("Error: ", e);
-
-            out.println("<body>");
-            out.println("<p>");
-            out.println("Exception in doGet: " + e.getMessage());
-            out.println("</p>");
-            out.print("</body>");
+            out.write("{\"error\":\"" + escapeJson(e.getMessage()) + "\"}");
         }
-
-        out.println("</html>");
         out.close();
-
     }
 
-
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
 }
