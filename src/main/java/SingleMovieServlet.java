@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 // This annotation maps this Java Servlet Class to a URL
 @WebServlet(name = "SingleMovieServlet", urlPatterns = "/api/movie")
@@ -46,13 +47,12 @@ public class SingleMovieServlet extends HttpServlet {
                     "LEFT JOIN genres g ON gm.genreId = g.id " +
                     "LEFT JOIN stars_in_movies sm ON m.id = sm.movieId " +
                     "LEFT JOIN stars s ON sm.starId = s.id " +
-                    "GROUP BY m.id, m.title, m.year, m.director, r.rating " +
-                    "ORDER BY r.rating DESC " +
-                    "LIMIT 20;";
+                    "WHERE m.id = ? " +
+                    "GROUP BY m.id, m.title, m.year, m.director, r.rating;";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, movieId);
-            ResultSet rs = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
 
             // Create JSON array for movies
             StringBuilder jsonBuilder = new StringBuilder();
