@@ -7,15 +7,15 @@ if (!starId) {
 } else {
     console.log(`Star ID: ${starId}`);
 
-    fetch(`/fabflix_war/api/star?id=${starId}`)
+    fetch(`api/star?id=${starId}`)
         .then(response => {
             console.log("Response status:", response.status);
             return response.text();
         })
         .then(text => {
-            console.log("Response text:", text);
+            console.log("Response text:", text)
             try {
-                const data = JSON.parse(text);
+                const data = JSON.parse(text); // Attempt to parse it as JSON
                 const container = document.getElementById("star-details");
 
                 if (data.error) {
@@ -23,6 +23,7 @@ if (!starId) {
                     return;
                 }
 
+                // Display star details
                 let html = `
                 <h2>${data.starInfo.starName || "Unknown Name"}</h2>
                 <p><span class="label">Birth Year:</span> ${data.starInfo.birthYear === null ? "N/A" : data.starInfo.birthYear}</p>
