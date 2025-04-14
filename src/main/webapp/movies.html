@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Top 20 Rated Movies</title>
     <link rel="stylesheet" href="movies.css">
-    <script src="./movies.js"></script>
 </head>
 
 <body>
@@ -19,6 +18,7 @@
 </header>
 
 <h1>Top 20 Rated Movies</h1>
+
 <table id="movies-table">
     <thead>
     <tr>
@@ -31,9 +31,12 @@
     </tr>
     </thead>
     <tbody>
-    <script src='movies.js'></script>
+    <!-- Movie rows will be inserted here by movies.js -->
     </tbody>
 </table>
-</body>
 
+<!-- Move script to end of body so DOM is fully loaded -->
+<script src="movies.js"></script>
+
+</body>
 </html>
