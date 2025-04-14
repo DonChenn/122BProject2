@@ -40,7 +40,7 @@ public class SingleMovieServlet extends HttpServlet {
             // Modified query to get movies with ratings, genres, and stars
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ',') AS genres, " +
-                    "GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars " +
+                    "GROUP_CONCAT(DISTINCT CONCAT(s.id, ':', s.name) ORDER BY s.name SEPARATOR ',') AS stars " +
                     "FROM movies m " +
                     "JOIN ratings r ON m.id = r.movieId " +
                     "LEFT JOIN genres_in_movies gm ON m.id = gm.movieId " +

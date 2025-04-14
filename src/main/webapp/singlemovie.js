@@ -23,18 +23,22 @@ fetch(`api/movie?id=${movieId}`)
 
         const movie = data.movies[0];
 
-        // Turn stars into links if needed (assumes stars is a comma-separated string)
+        // Parse stars data in format "id:name,id:name"
         const starsHTML = movie.stars.split(',').map(star => {
-            return `<a href="single-star.html?name=${encodeURIComponent(star.trim())}">${star.trim()}</a>`;
+            const [id, name] = star.split(':');
+            if (id && name) {
+                return `<a href="singlestar.html?id=${id.trim()}">${name.trim()}</a>`;
+            }
+            return star.trim();
         }).join(', ');
 
         container.innerHTML = `
-                    <h2>${movie.title} (${movie.year})</h2>
-                    <p><span class="label">Director:</span> ${movie.director}</p>
-                    <p><span class="label">Rating:</span> ${movie.rating}</p>
-                    <p><span class="label">Genres:</span> ${movie.genres}</p>
-                    <p><span class="label">Stars:</span> ${starsHTML}</p>
-                `;
+            <h2>${movie.title} (${movie.year})</h2>
+            <p><span class="label">Director:</span> ${movie.director}</p>
+            <p><span class="label">Rating:</span> ${movie.rating}</p>
+            <p><span class="label">Genres:</span> ${movie.genres}</p>
+            <p><span class="label">Stars:</span> ${starsHTML}</p>
+        `;
     })
     .catch(error => {
         console.error("Error fetching movie:", error);

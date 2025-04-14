@@ -50,7 +50,6 @@ public class SingleStarServlet extends HttpServlet {
                 return;
             }
 
-            // Store basic star info
             String starIdVal = escapeJson(checkStarResult.getString("id"));
             String starNameVal = escapeJson(checkStarResult.getString("name"));
             String birthYearVal = "null";
@@ -62,7 +61,6 @@ public class SingleStarServlet extends HttpServlet {
             checkStarResult.close();
             checkStarStatement.close();
 
-            // Get the movies the star was in with LEFT JOIN to ensure we get the star even if they have no movies
             String query =
                     "SELECT m.id AS movieId, m.title AS movieTitle, m.year, m.director " +
                             "FROM stars_in_movies sm " +
@@ -107,6 +105,7 @@ public class SingleStarServlet extends HttpServlet {
                     .append("}")
                     .append("}");
 
+            // Respond with the JSON
             out.write(jsonBuilder.toString());
 
             resultSet.close();
