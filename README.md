@@ -1,4 +1,5 @@
 Group Members:
+
 Donovan Chen
 - Worked on the "Top 20 Movies List" page and configured and demonstrated the website on AWS
   
