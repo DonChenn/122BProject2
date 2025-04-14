@@ -27,18 +27,20 @@ fetch("api/movies")
                 <td>${movie.year}</td>
                 <td>${movie.director}</td>
                 <td>${
-                  (movie.genres || "")
+                (movie.genres || "")
                     .split(",")
                     .slice(0, 3)
                     .map(genre => genre.trim())
                     .join(", ")
                 }
-                </td>
                 <td>${
-                  (movie.stars || "")
+                (movie.stars || "")
                     .split(",")
                     .slice(0, 3)
-                    .map(star => `<a href="#">${star.trim()}</a>`)
+                    .map(star => {
+                        const [id, name] = star.split(":");
+                        return `<a href="singlestar.html?id=${id}">${name.trim()}</a>`;
+                    })
                     .join(", ")
                 }
                 </td>
