@@ -38,7 +38,7 @@ fetch("api/movies")
                   (movie.stars || "")
                     .split(",")
                     .slice(0, 3)
-                    .map(star => `<a href="#">${star.trim()}</a>`)
+                    .map(star => `<a href="singlestar.html">${star.trim()}</a>`)
                     .join(", ")
                 }
                 </td>
