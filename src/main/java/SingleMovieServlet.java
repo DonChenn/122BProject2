@@ -17,7 +17,7 @@ public class SingleMovieServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String loginUser = "mytestuser";
-        String loginPasswd = "password123";
+        String loginPasswd = "My6$Password";
         String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
 
         // Set response to JSON
