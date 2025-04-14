@@ -6,4 +6,4 @@ Donovan Chen
 Jake Silverman
 - Worked on the "Single Movie" and "Single Star" page and did CSS for the pages
 
-Demonstration Video: https://youtu.be/NkNcB-utUi0
+Demonstration Video: https://youtu.be/gA-Bn4CHWns
