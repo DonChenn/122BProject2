@@ -2,16 +2,43 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+
     <display-name>cs122b-spring21-project1-api-example</display-name>
+
+    <!-- Welcome file for root access -->
     <welcome-file-list>
-        <welcome-file>movies.html</welcome-file>
+        <welcome-file>login.html</welcome-file>
     </welcome-file-list>
 
-    <!-- Register the DataSource which defined in META-INF/context.xml-->
+    <!-- Register the servlets -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>LoginServlet</servlet-class> <!-- Assuming it's in the default package -->
+        <load-on-startup>1</load-on-startup> <!-- Servlet will load on startup -->
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern> <!-- Maps the /login URL to the LoginServlet -->
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MoviesServlet</servlet-name>
+        <servlet-class>MoviesServlet</servlet-class> <!-- Assuming it's in the default package -->
+        <load-on-startup>2</load-on-startup> <!-- Servlet will load after LoginServlet -->
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MoviesServlet</servlet-name>
+        <url-pattern>/api/movies</url-pattern> <!-- Maps the /api/movies URL to the MoviesServlet -->
+    </servlet-mapping>
+
+    <!-- Register the DataSource for MySQL database (if you're using it) -->
     <resource-ref>
-        <description>MySQL DataSource example</description>
+        <description>MySQL DataSource</description>
         <res-ref-name>jdbc/moviedb</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>
+
 </web-app>

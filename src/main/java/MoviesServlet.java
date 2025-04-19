@@ -9,24 +9,30 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-// This annotation maps this Java Servlet Class to a URL
 @WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
 public class MoviesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String username = (String) request.getSession().getAttribute("username");
+
+// TODO: FIX THIS
+//        if (username == null) {
+//            response.sendRedirect(request.getContextPath() + "/login.html");
+//            return;
+//        }
+
         String loginUser = "mytestuser";
         String loginPasswd = "My6$Password";
-        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+        String loginUrl = "jdbc:mysql://localhost:3306/moviedb?useSSL=false&serverTimezone=UTC";
 
         // Set response to JSON
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-            Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+        try (Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+             Statement statement = connection.createStatement()) {
 
             // Modified query to get movies with ratings, genres, and stars (including star IDs)
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
@@ -42,7 +48,6 @@ public class MoviesServlet extends HttpServlet {
                     "ORDER BY r.rating DESC " +
                     "LIMIT 20;";
 
-            Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
             // Create JSON array for movies
@@ -69,10 +74,6 @@ public class MoviesServlet extends HttpServlet {
 
             jsonBuilder.append("]}");
             out.write(jsonBuilder.toString());
-
-            resultSet.close();
-            statement.close();
-            connection.close();
 
         } catch (Exception e) {
             request.getServletContext().log("Error: ", e);

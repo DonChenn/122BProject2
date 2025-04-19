@@ -16,14 +16,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Add the Servlet API dependency -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-
+    <!-- Jakarta Servlet API -->
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
@@ -31,6 +24,7 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- MySQL Connector/J -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
