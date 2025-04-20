@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Login Page</title>
     <meta charset="UTF-8">
+    <title>Login Page</title>
+    <style>
+        #message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
+<h1>Login</h1>
 
-<h1 style="text-align: center;">Login Form</h1>
-
-<form action="login" method="POST">
-    Email: <input type="text" name="email"><br>
-    Password: <input type="password" name="password"><br>
+<form id="login-form">
+    Email: <input type="text" name="email" id="email" required><br>
+    Password: <input type="password" name="password" id="password" required><br>
     <input type="submit" value="Login">
 </form>
+
+<div id="message"></div>
+
+<script>
+</script>
+
+<script src="login.js"></script>
 
 </body>
 </html>

@@ -14,13 +14,13 @@ public class MoviesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String username = (String) request.getSession().getAttribute("username");
+        String email = (String) request.getSession().getAttribute("email");
 
 // TODO: FIX THIS
-//        if (username == null) {
-//            response.sendRedirect(request.getContextPath() + "/login.html");
-//            return;
-//        }
+        if (email == null) {
+            response.sendRedirect(request.getContextPath() + "/login.html");
+            return;
+        }
 
         String loginUser = "mytestuser";
         String loginPasswd = "My6$Password";
