@@ -16,7 +16,6 @@ public class MoviesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = (String) request.getSession().getAttribute("email");
 
-// TODO: FIX THIS
         if (email == null) {
             response.sendRedirect(request.getContextPath() + "/login.html");
             return;
