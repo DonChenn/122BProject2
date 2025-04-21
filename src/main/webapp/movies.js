@@ -2,6 +2,30 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch_movies();
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    verify_login();
+});
+
+function verify_login() {
+    fetch("session-check", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.loggedIn) {
+                window.location.href = "login.html";
+            } else {
+                fetch_movies();
+            }
+        })
+        .catch(error => {
+            console.error("Session check failed:", error);
+            window.location.href = "login.html";
+        });
+}
+
+
 function fetch_movies() {
     fetch("api/movies")
         .then(response => {

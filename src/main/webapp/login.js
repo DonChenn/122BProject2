@@ -4,7 +4,6 @@ const messageBox = document.getElementById("message");
 form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    // Manually extract and encode form data
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
