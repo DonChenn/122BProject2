@@ -1,29 +1,10 @@
+import { verify_login } from './auth.js';
+verify_login();
+
+
 document.addEventListener("DOMContentLoaded", function() {
     fetch_movies();
 });
-
-document.addEventListener("DOMContentLoaded", function() {
-    verify_login();
-});
-
-function verify_login() {
-    fetch("session-check", {
-        method: "GET",
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.loggedIn) {
-                window.location.href = "login.html";
-            } else {
-                fetch_movies();
-            }
-        })
-        .catch(error => {
-            console.error("Session check failed:", error);
-            window.location.href = "login.html";
-        });
-}
 
 
 function fetch_movies() {
@@ -37,7 +18,7 @@ function fetch_movies() {
         .then(data => {
             console.log("Data received:", data);
             const tableBody = document.querySelector("#movies-table tbody");
-            tableBody.innerHTML = ""; // Clear previous data
+            tableBody.innerHTML = "";
 
             if (!data.movies || data.movies.length === 0) {
                 console.log("No movies found in the response");
