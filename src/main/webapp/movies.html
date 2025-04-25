@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Movies Page</title>
     <link rel="stylesheet" href="movies.css">
+    <style>
+        th a { text-decoration: none; color: inherit; }
+        th a .arrow { font-size: 0.8em; } /* Style for sort arrows */
+    </style>
 </head>
 
 <body>
@@ -11,7 +15,7 @@
     <nav>
         <ul>
             <li><a href="#"> HOME </a></li>
-            <li><a href="#"> MOVIES </a></li>
+            <li><a href="movies.html"> MOVIES </a></li>
             <li><a href="#"> STARS </a></li>
             <li><button id="logout-link" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">LOGOUT</button></li>
         </ul>
@@ -23,20 +27,19 @@
 <table id="movies-table">
     <thead>
     <tr>
-        <th>Title</th>
+        <th><a href="#" id="sort-title-link">Title <span class="arrow"></span></a></th>
         <th>Year</th>
         <th>Director</th>
         <th>Genres</th>
         <th>Stars</th>
-        <th>Rating</th>
+        <th><a href="#" id="sort-rating-link">Rating <span class="arrow"></span></a></th>
     </tr>
     </thead>
     <tbody>
     </tbody>
 </table>
 
-<div id="movies-details">
-    <p>Loading movies...</p>
+<div id="movies-details" style="display: block;"> <p>Loading movies...</p>
 </div>
 
 <script type="module" src="movies.js"></script>

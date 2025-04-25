@@ -9,10 +9,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
+// import java.sql.PreparedStatement;
+
 
 @WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
 public class MoviesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
+    private static final List<String> ALLOWED_SORT_FIELDS = Arrays.asList("title", "rating");
+    private static final List<String> ALLOWED_ORDERS = Arrays.asList("asc", "desc");
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -25,6 +32,12 @@ public class MoviesServlet extends HttpServlet {
 
         String genreFilter = request.getParameter("genre");
 
+        String sort1 = request.getParameter("sort1");
+        String order1 = request.getParameter("order1");
+        String sort2 = request.getParameter("sort2");
+        String order2 = request.getParameter("order2");
+
+
         String loginUser = "mytestuser";
         String loginPasswd = "My6$Password";
         String loginUrl = "jdbc:mysql://localhost:3306/moviedb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
@@ -32,6 +45,7 @@ public class MoviesServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
+
 
         try (Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
              Statement statement = connection.createStatement()) {
@@ -77,7 +91,29 @@ public class MoviesServlet extends HttpServlet {
             }
 
             String groupByClause = "GROUP BY m.id, m.title, m.year, m.director, r.rating, tspm.topStars ";
-            String orderByClause = "ORDER BY r.rating DESC ";
+
+            StringBuilder orderByBuilder = new StringBuilder("ORDER BY ");
+            boolean firstSortParam = true;
+
+            if (isValidSortParam(sort1, order1)) {
+                orderByBuilder.append(getColumnForSortField(sort1)).append(" ").append(order1);
+                firstSortParam = false;
+            }
+
+            if (isValidSortParam(sort2, order2)) {
+                if (!firstSortParam) {
+                    orderByBuilder.append(", ");
+                }
+                orderByBuilder.append(getColumnForSortField(sort2)).append(" ").append(order2);
+                firstSortParam = false;
+            }
+
+            if (firstSortParam) {
+                orderByBuilder.append("r.rating DESC, m.title ASC");
+            }
+            String orderByClause = orderByBuilder.toString() + " ";
+
+
             String limitClause = "LIMIT 20;";
 
             String finalQuery = starMovieCountsCTE + rankedStarsCTE + topStarsPerMovieCTE +
@@ -125,6 +161,22 @@ public class MoviesServlet extends HttpServlet {
             }
         }
     }
+
+    private boolean isValidSortParam(String field, String order) {
+        return field != null && order != null &&
+                ALLOWED_SORT_FIELDS.contains(field.toLowerCase()) &&
+                ALLOWED_ORDERS.contains(order.toLowerCase());
+    }
+
+    private String getColumnForSortField(String field) {
+        if ("title".equalsIgnoreCase(field)) {
+            return "m.title";
+        } else if ("rating".equalsIgnoreCase(field)) {
+            return "r.rating";
+        }
+        return "r.rating";
+    }
+
 
     private String escapeJson(String s) {
         if (s == null) return "";
