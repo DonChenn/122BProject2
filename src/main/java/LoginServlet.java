@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet {
 
             String loginUser = "mytestuser";
             String loginPasswd = "My6$Password";
-            String loginUrl = "jdbc:mysql://localhost:3306/moviedb?useSSL=false&serverTimezone=UTC";
+            String loginUrl = "jdbc:mysql://localhost:3306/moviedb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
 
             try (Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)) {
 
