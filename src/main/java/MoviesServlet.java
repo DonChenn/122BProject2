@@ -83,12 +83,46 @@ public class MoviesServlet extends HttpServlet {
                     "LEFT JOIN genres g_main ON gm_main.genreId = g_main.id " +
                     "LEFT JOIN TopStarsPerMovie tspm ON m.id = tspm.movieId ";
 
-            String whereClause = "";
+            String whereConditions = "";
+
             if (genreFilter != null && !genreFilter.trim().isEmpty()) {
                 mainQuerySelect += " JOIN genres_in_movies gm_filter ON m.id = gm_filter.movieId " +
                         " JOIN genres g_filter ON gm_filter.genreId = g_filter.id ";
-                whereClause = "WHERE g_filter.name = '" + escapeSQL(genreFilter) + "' ";
+                whereConditions += "g_filter.name = '" + escapeSQL(genreFilter) + "' ";
             }
+
+            String title = request.getParameter("title");
+            String year = request.getParameter("year");
+            String director = request.getParameter("director");
+            String starName = request.getParameter("star_name");
+
+            if (title != null && !title.trim().isEmpty()) {
+                if (!whereConditions.isEmpty()) whereConditions += "AND ";
+                whereConditions += "m.title LIKE '%" + escapeSQL(title.trim()) + "%' ";
+            }
+
+            if (year != null && !year.trim().isEmpty()) {
+                if (!whereConditions.isEmpty()) whereConditions += "AND ";
+                whereConditions += "m.year = " + escapeSQL(year.trim()) + " ";
+            }
+
+            if (director != null && !director.trim().isEmpty()) {
+                if (!whereConditions.isEmpty()) whereConditions += "AND ";
+                whereConditions += "m.director LIKE '%" + escapeSQL(director.trim()) + "%' ";
+            }
+
+            if (starName != null && !starName.trim().isEmpty()) {
+                if (!whereConditions.isEmpty()) whereConditions += "AND ";
+                whereConditions += "EXISTS (SELECT 1 FROM stars_in_movies sm " +
+                        "JOIN stars s ON sm.starId = s.id " +
+                        "WHERE sm.movieId = m.id AND s.name LIKE '%" + escapeSQL(starName.trim()) + "%') ";
+            }
+
+            String whereClause = "";
+            if (!whereConditions.isEmpty()) {
+                whereClause = "WHERE " + whereConditions;
+            }
+
 
             String groupByClause = "GROUP BY m.id, m.title, m.year, m.director, r.rating, tspm.topStars ";
 

@@ -1,6 +1,38 @@
 import { verify_login } from './auth.js';
 verify_login();
 
+const searchForm = document.getElementById("search-form");
+const resetButton = document.getElementById("reset-button");
+
+searchForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    ['title', 'year', 'director', 'star_name'].forEach(param => {
+        const value = document.getElementById(param).value.trim();
+        if (value) {
+            urlParams.set(param, value);
+        } else {
+            urlParams.delete(param);
+        }
+    });
+
+    // Preserve sorting and genre
+    urlParams.set('sort1', currentSort.sort1);
+    urlParams.set('order1', currentSort.order1);
+    urlParams.set('sort2', currentSort.sort2);
+    urlParams.set('order2', currentSort.order2);
+
+    window.location.search = urlParams.toString(); // reload with updated query
+});
+
+resetButton.addEventListener("click", function() {
+    document.getElementById("search-form").reset();
+    window.location.href = "movies.html"; // reset all filters
+});
+
+
 let currentSort = {
     sort1: 'rating',
     order1: 'desc',
@@ -11,6 +43,12 @@ let currentSort = {
 document.addEventListener("DOMContentLoaded", function() {
     updateSortLinks();
     fetch_movies();
+    const urlParams = new URLSearchParams(window.location.search);
+    ['title', 'year', 'director', 'star_name'].forEach(param => {
+        if (urlParams.has(param)) {
+            document.getElementById(param).value = urlParams.get(param);
+        }
+    });
 });
 
 function updateSortLinks() {
@@ -80,6 +118,10 @@ function fetch_movies() {
     if (genreFilter) {
         apiParams.set('genre', genreFilter);
     }
+    ['title', 'year', 'director', 'star_name'].forEach(param => {
+        const value = urlParams.get(param);
+        if (value) apiParams.set(param, value);
+    });
     apiParams.set('sort1', sort1);
     apiParams.set('order1', order1);
     apiParams.set('sort2', sort2);
