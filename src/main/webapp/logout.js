@@ -14,7 +14,7 @@ document.getElementById("logout-link").addEventListener("click", function(event)
         .then(data => {
             console.log("Response data:", data);
             if (data.status === "success") {
-                document.location.replace("login.html");
+                document.location.replace("/fabflix_war/login.html");
             } else {
                 alert("Logout failed");
             }
