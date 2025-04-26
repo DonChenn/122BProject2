@@ -3,11 +3,37 @@ verify_login();
 
 const searchForm = document.getElementById("search-form");
 const resetButton = document.getElementById("reset-button");
+const applySortButton = document.getElementById("apply-sort-button");
+
+const sort1Field = document.getElementById("sort1-field");
+const sort1Order = document.getElementById("sort1-order");
+const sort2Field = document.getElementById("sort2-field");
+const sort2Order = document.getElementById("sort2-order");
+
+function getCurrentSortParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return {
+        sort1: urlParams.get('sort1') || 'rating',
+        order1: urlParams.get('order1') || 'desc',
+        sort2: urlParams.get('sort2') || 'title',
+        order2: urlParams.get('order2') || 'asc'
+    };
+}
+
+function updateSortControlsUI() {
+    const currentSort = getCurrentSortParams();
+    sort1Field.value = currentSort.sort1;
+    sort1Order.value = currentSort.order1;
+    sort2Field.value = (currentSort.sort2 && currentSort.sort2 !== 'none') ? currentSort.sort2 : 'none';
+    sort2Order.value = currentSort.order2;
+    sort2Order.disabled = (sort2Field.value === 'none');
+}
+
 
 searchForm.addEventListener("submit", function(event) {
     event.preventDefault();
-
     const urlParams = new URLSearchParams(window.location.search);
+    const currentSort = getCurrentSortParams();
 
     ['title', 'year', 'director', 'star_name'].forEach(param => {
         const value = document.getElementById(param).value.trim();
@@ -18,118 +44,76 @@ searchForm.addEventListener("submit", function(event) {
         }
     });
 
-    // Preserve sorting and genre
     urlParams.set('sort1', currentSort.sort1);
     urlParams.set('order1', currentSort.order1);
-    urlParams.set('sort2', currentSort.sort2);
-    urlParams.set('order2', currentSort.order2);
+    if (currentSort.sort2 && currentSort.sort2 !== 'none') {
+        urlParams.set('sort2', currentSort.sort2);
+        urlParams.set('order2', currentSort.order2);
+    } else {
+        urlParams.delete('sort2');
+        urlParams.delete('order2');
+    }
 
-    window.location.search = urlParams.toString(); // reload with updated query
+    window.location.search = urlParams.toString();
 });
 
 resetButton.addEventListener("click", function() {
     document.getElementById("search-form").reset();
-    window.location.href = "movies.html"; // reset all filters
+    window.location.href = "movies.html";
+});
+
+applySortButton.addEventListener("click", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const s1f = sort1Field.value;
+    const s1o = sort1Order.value;
+    const s2f = sort2Field.value;
+    const s2o = sort2Order.value;
+
+    if (s2f !== 'none' && s1f === s2f) {
+        alert("Primary and Secondary sort fields cannot be the same.");
+        return;
+    }
+
+    urlParams.set('sort1', s1f);
+    urlParams.set('order1', s1o);
+
+    if (s2f !== 'none') {
+        urlParams.set('sort2', s2f);
+        urlParams.set('order2', s2o);
+    } else {
+        urlParams.delete('sort2');
+        urlParams.delete('order2');
+    }
+
+    window.location.search = urlParams.toString();
+});
+
+sort2Field.addEventListener('change', function() {
+    sort2Order.disabled = (this.value === 'none');
 });
 
 
-let currentSort = {
-    sort1: 'rating',
-    order1: 'desc',
-    sort2: 'title',
-    order2: 'asc'
-};
-
 document.addEventListener("DOMContentLoaded", function() {
-    updateSortLinks();
-    fetch_movies();
+    updateSortControlsUI();
+
     const urlParams = new URLSearchParams(window.location.search);
     ['title', 'year', 'director', 'star_name'].forEach(param => {
         if (urlParams.has(param)) {
             document.getElementById(param).value = urlParams.get(param);
         }
     });
+
+    fetch_movies();
 });
-
-function updateSortLinks() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sort1 = urlParams.get('sort1') || currentSort.sort1;
-    const order1 = urlParams.get('order1') || currentSort.order1;
-    const sort2 = urlParams.get('sort2') || currentSort.sort2;
-    const order2 = urlParams.get('order2') || currentSort.order2;
-
-    currentSort = { sort1, order1, sort2, order2 };
-
-    const titleLink = document.getElementById('sort-title-link');
-    const ratingLink = document.getElementById('sort-rating-link');
-    const titleArrow = titleLink.querySelector('.arrow');
-    const ratingArrow = ratingLink.querySelector('.arrow');
-
-    titleArrow.textContent = '';
-    ratingArrow.textContent = '';
-
-    const existingParams = new URLSearchParams(window.location.search);
-    const baseParams = new URLSearchParams();
-    if (existingParams.has('genre')) {
-        baseParams.set('genre', existingParams.get('genre'));
-    }
-
-    let titleParams = new URLSearchParams(baseParams);
-    if (sort1 === 'title') {
-        titleArrow.textContent = (order1 === 'asc') ? ' ▲' : ' ▼';
-        titleParams.set('sort1', 'title');
-        titleParams.set('order1', (order1 === 'asc') ? 'desc' : 'asc');
-        titleParams.set('sort2', 'rating');
-        titleParams.set('order2', 'desc');
-    } else {
-        titleParams.set('sort1', 'title');
-        titleParams.set('order1', 'asc');
-        titleParams.set('sort2', 'rating');
-        titleParams.set('order2', 'desc');
-    }
-    titleLink.href = `movies.html?${titleParams.toString()}`;
-
-
-    let ratingParams = new URLSearchParams(baseParams);
-    if (sort1 === 'rating') {
-        ratingArrow.textContent = (order1 === 'asc') ? ' ▲' : ' ▼';
-        ratingParams.set('sort1', 'rating');
-        ratingParams.set('order1', (order1 === 'asc') ? 'desc' : 'asc');
-        ratingParams.set('sort2', 'title');
-        ratingParams.set('order2', 'asc');
-    } else {
-        ratingParams.set('sort1', 'rating');
-        ratingParams.set('order1', 'desc');
-        ratingParams.set('sort2', 'title');
-        ratingParams.set('order2', 'asc');
-    }
-    ratingLink.href = `movies.html?${ratingParams.toString()}`;
-}
 
 
 function fetch_movies() {
     const moviesDetailsDiv = document.getElementById("movies-details");
-
     const urlParams = new URLSearchParams(window.location.search);
-    const genreFilter = urlParams.get('genre');
-    const { sort1, order1, sort2, order2 } = currentSort;
 
-    let apiParams = new URLSearchParams();
-    if (genreFilter) {
-        apiParams.set('genre', genreFilter);
-    }
-    ['title', 'year', 'director', 'star_name'].forEach(param => {
-        const value = urlParams.get(param);
-        if (value) apiParams.set(param, value);
-    });
-    apiParams.set('sort1', sort1);
-    apiParams.set('order1', order1);
-    apiParams.set('sort2', sort2);
-    apiParams.set('order2', order2);
-
-    let apiUrl = "api/movies?" + apiParams.toString();
+    let apiUrl = "api/movies?" + urlParams.toString();
     console.log("Fetching:", apiUrl);
-
 
     fetch(apiUrl)
         .then(response => {
@@ -148,7 +132,8 @@ function fetch_movies() {
                 const row = document.createElement("tr");
                 const cell = document.createElement("td");
                 cell.colSpan = 6;
-                cell.textContent = genreFilter ? `No movies found for genre "${genreFilter}"` : "No movies found";
+                const genreFilter = urlParams.get('genre');
+                cell.textContent = genreFilter ? `No movies found for genre "${genreFilter}"` : "No movies found matching the criteria";
                 row.appendChild(cell);
                 tableBody.appendChild(row);
             } else {
@@ -157,9 +142,10 @@ function fetch_movies() {
 
                     const genreLinks = (movie.genres || "")
                         .split(",")
+                        .map(genre => genre.trim())
+                        .filter(genre => genre)
                         .slice(0, 3)
-                        .map(genre => {
-                            const trimmedGenre = genre.trim();
+                        .map(trimmedGenre => {
                             const encodedGenre = encodeURIComponent(trimmedGenre);
                             return `<a href="movies.html?genre=${encodedGenre}">${trimmedGenre}</a>`;
                         })
@@ -169,11 +155,15 @@ function fetch_movies() {
                         .split(",")
                         .map(star => {
                             const parts = star.split(":");
-                            const id = parts[0];
-                            const name = parts.length > 1 ? parts[1].trim() : 'Unknown Star';
-                            return `<a href="singlestar.html?id=${encodeURIComponent(id)}">${name}</a>`;
+                            if (parts.length >= 2) {
+                                const id = parts[0].trim();
+                                const name = parts.slice(1).join(':').trim();
+                                return `<a href="singlestar.html?id=${encodeURIComponent(id)}">${name}</a>`;
+                            }
+                            return star.trim();
                         })
                         .join(", ");
+
 
                     row.innerHTML = `
                         <td><a href="singlemovie.html?id=${encodeURIComponent(movie.id)}">${movie.title}</a></td>
@@ -181,7 +171,7 @@ function fetch_movies() {
                         <td>${movie.director}</td>
                         <td>${genreLinks}</td>
                         <td>${starLinks}</td>
-                        <td>${movie.rating}</td>
+                        <td>${movie.rating !== null && movie.rating !== undefined ? movie.rating : 'N/A'}</td>
                     `;
                     tableBody.appendChild(row);
                 });

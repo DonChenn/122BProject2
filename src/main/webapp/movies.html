@@ -5,8 +5,9 @@
     <title>Movies Page</title>
     <link rel="stylesheet" href="movies.css">
     <style>
-        th a { text-decoration: none; color: inherit; }
-        th a .arrow { font-size: 0.8em; } /* Style for sort arrows */
+        #sort-controls { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        #sort-controls label { margin-right: 5px; }
+        #sort-controls select, #sort-controls button { margin-right: 15px; padding: 5px; }
     </style>
 </head>
 
@@ -27,25 +28,51 @@
 <section id="search-section">
     <h2>Search Movies</h2>
     <form id="search-form">
-        <input type="text" id="title" name="title" placeholder="Title">
-        <input type="text" id="year" name="year" placeholder="Year">
-        <input type="text" id="director" name="director" placeholder="Director">
-        <input type="text" id="star_name" name="star_name" placeholder="Star Name">
+        <label for="title"></label><input type="text" id="title" name="title" placeholder="Title">
+        <label for="year"></label><input type="text" id="year" name="year" placeholder="Year">
+        <label for="director"></label><input type="text" id="director" name="director" placeholder="Director">
+        <label for="star_name"></label><input type="text" id="star_name" name="star_name" placeholder="Star Name">
         <button type="submit">Search</button>
         <button type="button" id="reset-button">Reset</button>
     </form>
+</section>
+
+<section id="sort-controls">
+    <h2>Sort Movies</h2>
+    <label for="sort1-field">Sort by:</label>
+    <select id="sort1-field" name="sort1">
+        <option value="rating">Rating</option>
+        <option value="title">Title</option>
+    </select>
+    <label for="sort1-order"></label><select id="sort1-order" name="order1">
+        <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
+    </select>
+
+    <label for="sort2-field">Then by:</label>
+    <select id="sort2-field" name="sort2">
+        <option value="none">None</option>
+        <option value="rating">Rating</option>
+        <option value="title">Title</option>
+    </select>
+    <label for="sort2-order"></label><select id="sort2-order" name="order2">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+
+    <button id="apply-sort-button" type="button">Apply Sort</button>
 </section>
 
 
 <table id="movies-table">
     <thead>
     <tr>
-        <th><a href="#" id="sort-title-link">Title <span class="arrow"></span></a></th>
+        <th>Title</th>
         <th>Year</th>
         <th>Director</th>
         <th>Genres</th>
         <th>Stars</th>
-        <th><a href="#" id="sort-rating-link">Rating <span class="arrow"></span></a></th>
+        <th>Rating</th>
     </tr>
     </thead>
     <tbody>
