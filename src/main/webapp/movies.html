@@ -11,7 +11,7 @@
         #pagination-controls { margin-top: 15px; text-align: center; }
         #pagination-controls button { padding: 5px 10px; margin: 0 10px; cursor: pointer;}
         #pagination-controls button:disabled { cursor: not-allowed; opacity: 0.6; }
-        #results-per-page-control { margin-left: auto; /* Pushes this control to the right */ }
+        #results-per-page-control { margin-left: auto;}
     </style>
 </head>
 
@@ -22,7 +22,7 @@
             <li><a href="#"> HOME </a></li>
             <li><a href="movies.html"> MOVIES </a></li>
             <li><a href="#"> STARS </a></li>
-            <li><button id="logout-link" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">LOGOUT</button></li>
+            <li><button id="logout-link">LOGOUT</button></li>
         </ul>
     </nav>
 </header>
@@ -95,12 +95,12 @@
     </tbody>
 </table>
 
+<div id="movies-details" style="display: block;"> <p>Loading movies...</p>
+</div>
+
 <div id="pagination-controls">
     <button id="prev-button" disabled>Previous</button>
     <span id="page-info">Page 1</span> <button id="next-button" disabled>Next</button>
-</div>
-
-<div id="movies-details" style="display: block;"> <p>Loading movies...</p>
 </div>
 
 <script type="module" src="movies.js"></script>
