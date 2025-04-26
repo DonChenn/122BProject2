@@ -42,6 +42,8 @@ public class MoviesServlet extends HttpServlet {
         String year = request.getParameter("year");
         String director = request.getParameter("director");
         String starName = request.getParameter("star_name");
+        String titleInitial = request.getParameter("titleInitial");
+
 
         String sort1 = request.getParameter("sort1");
         String order1 = request.getParameter("order1");
@@ -140,6 +142,14 @@ public class MoviesServlet extends HttpServlet {
                 conditions.add("EXISTS (SELECT 1 FROM stars_in_movies sim_check " +
                         "JOIN stars s_check ON sim_check.starId = s_check.id " +
                         "WHERE sim_check.movieId = m.id AND s_check.name LIKE '%" + escapeSQL(starName.trim()) + "%')");
+            }
+
+            if (titleInitial != null && !titleInitial.trim().isEmpty()) {
+                if (titleInitial.equals("*")) {
+                    conditions.add("m.title REGEXP '^[^a-zA-Z0-9]'");
+                } else {
+                    conditions.add("m.title LIKE '" + escapeSQL(titleInitial.trim()) + "%'");
+                }
             }
 
             if (!conditions.isEmpty()) {

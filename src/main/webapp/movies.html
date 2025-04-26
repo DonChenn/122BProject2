@@ -13,6 +13,13 @@
         #pagination-controls button:disabled { cursor: not-allowed; opacity: 0.6; }
         #results-per-page-control { margin-left: auto;}
     </style>
+    <style>
+        .selected-browse-link {
+            color: darkred;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
@@ -40,6 +47,21 @@
         <button type="button" id="reset-button">Reset</button>
     </form>
 </section>
+
+<section id="browse-section" style="margin-top: 20px;">
+    <h2>Browse Movies</h2>
+
+    <div id="initial-list" style="margin-bottom: 20px;">
+        <h3>By Title</h3>
+        <div>Loading title initials...</div>
+    </div>
+
+    <div id="genre-list">
+        <h3>By Genre</h3>
+        <div>Loading genres...</div>
+    </div>
+</section>
+
 
 
 <section id="sort-controls">

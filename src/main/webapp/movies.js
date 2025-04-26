@@ -19,6 +19,20 @@ function getUrlParams() {
     return new URLSearchParams(window.location.search);
 }
 
+function buildUpdatedUrl(newParams) {
+    const urlParams = getUrlParams();
+
+    // Remove any old title/year/director/star_name search if browsing
+    ['title', 'year', 'director', 'star_name', 'genre', 'titleInitial'].forEach(param => urlParams.delete(param));
+
+    // Apply new browsing params
+    for (const key in newParams) {
+        urlParams.set(key, newParams[key]);
+    }
+
+    return urlParams.toString();
+}
+
 function getCurrentSortParams(urlParams) {
     return {
         sort1: urlParams.get('sort1') || 'rating',
@@ -166,9 +180,78 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    fetchInitials();
+    fetchGenres();
     fetch_movies();
 });
 
+function fetchInitials() {
+    fetch("api/title-initials")
+        .then(response => response.json())
+        .then(data => {
+            const urlParams = getUrlParams();
+            const selectedInitial = urlParams.get('titleInitial');
+
+            const initialListDiv = document.querySelector("#initial-list div");
+            if (!initialListDiv) return;
+            initialListDiv.innerHTML = "";
+
+            data.initials.forEach(initial => {
+                const link = document.createElement("a");
+                link.href = "movies.html?" + buildUpdatedUrl({ titleInitial: initial, page: 1 });
+                link.textContent = initial;
+                link.style.marginRight = "10px";
+                link.style.textDecoration = "none";
+                link.style.color = "blue";
+                link.style.fontWeight = "bold";
+
+                if (initial === selectedInitial) {
+                    link.classList.add("selected-browse-link");
+                }
+
+                initialListDiv.appendChild(link);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching title initials:", error);
+            const initialListDiv = document.querySelector("#initial-list div");
+            if (initialListDiv) initialListDiv.textContent = "Failed to load title initials.";
+        });
+}
+
+function fetchGenres() {
+    fetch("api/genres")
+        .then(response => response.json())
+        .then(data => {
+            const urlParams = getUrlParams();
+            const selectedGenre = urlParams.get('genre');
+
+            const genreListDiv = document.querySelector("#genre-list div");
+            if (!genreListDiv) return;
+            genreListDiv.innerHTML = "";
+
+            data.genres.forEach(genre => {
+                const link = document.createElement("a");
+                link.href = "movies.html?" + buildUpdatedUrl({ genre: genre, page: 1 });
+                link.textContent = genre;
+                link.style.marginRight = "10px";
+                link.style.textDecoration = "none";
+                link.style.color = "blue";
+                link.style.fontWeight = "bold";
+
+                if (genre === selectedGenre) {
+                    link.classList.add("selected-browse-link");
+                }
+
+                genreListDiv.appendChild(link);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching genres:", error);
+            const genreListDiv = document.querySelector("#genre-list div");
+            if (genreListDiv) genreListDiv.textContent = "Failed to load genres.";
+        });
+}
 
 function fetch_movies() {
     const moviesDetailsDiv = document.getElementById("movies-details");
