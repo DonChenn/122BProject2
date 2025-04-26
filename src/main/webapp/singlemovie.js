@@ -31,20 +31,36 @@ function fetch_single_movie() {
 
             const movie = data.movies[0];
 
-            // Parse stars data in format "id:name,id:name"
-            const starsHTML = movie.stars.split(',').map(star => {
-                const [id, name] = star.split(':');
-                if (id && name) {
-                    return `<a href="singlestar.html?id=${id.trim()}">${name.trim()}</a>`;
-                }
-                return star.trim();
-            }).join(', ');
+            let genresHTML = 'N/A';
+            if (movie.genres) {
+                genresHTML = movie.genres.split(',').map(genre => {
+                    const [id, name] = genre.split(':');
+                    if (id && name) {
+                        const trimmedId = id.trim();
+                        const trimmedName = name.trim();
+                        const genreUrl = `movies.html?genreId=${encodeURIComponent(trimmedId)}&genre=${encodeURIComponent(trimmedName)}&page=1`;
+                        return `<a href="${genreUrl}">${name.trim()}</a>`;
+                    }
+                    return genre.trim();
+                }).join(', ');
+            }
+
+            let starsHTML = 'N/A';
+            if (movie.stars) {
+                starsHTML = movie.stars.split(',').map(star => {
+                    const [id, name] = star.split(':');
+                    if (id && name) {
+                        return `<a href="singlestar.html?id=${id.trim()}">${name.trim()}</a>`;
+                    }
+                    return star.trim();
+                }).join(', ');
+            }
 
             container.innerHTML = `
                 <h2>${movie.title} (${movie.year})</h2>
                 <p><span class="label">Director:</span> ${movie.director}</p>
-                <p><span class="label">Rating:</span> ${movie.rating}</p>
-                <p><span class="label">Genres:</span> ${movie.genres}</p>
+                <p><span class="label">Rating:</span> ${movie.rating || 'N/A'}</p>
+                <p><span class="label">Genres:</span> ${genresHTML}</p>
                 <p><span class="label">Stars:</span> ${starsHTML}</p>
             `;
         })
