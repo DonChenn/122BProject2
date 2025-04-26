@@ -83,6 +83,14 @@ public class MoviesServlet extends HttpServlet {
         Gson gson = new Gson();
         JsonObject jsonResponse = new JsonObject();
 
+        String queryString = request.getQueryString();
+        String currentUrl = "movies.html" + (queryString != null ? "?" + queryString : "");
+
+        if (session != null) {
+            session.setAttribute("movieListUrl", currentUrl);
+            System.out.println("Stored movieListUrl in session: " + currentUrl);
+        }
+
         try (Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
              Statement statement = connection.createStatement()) {
 

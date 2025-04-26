@@ -6,7 +6,34 @@ const starId = urlParams.get("id");
 
 document.addEventListener("DOMContentLoaded", function() {
     fetch_single_star();
+    updateBackLink();
 });
+
+function updateBackLink() {
+    fetch('api/session-data')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const backLink = document.getElementById('back-to-list-link');
+            if (backLink && data.movieListUrl) {
+                backLink.href = data.movieListUrl;
+                console.log("Back link set to:", data.movieListUrl);
+            } else if (backLink) {
+                backLink.href = 'movies.html';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching session data:', error);
+            const backLink = document.getElementById('back-to-list-link');
+            if (backLink) {
+                backLink.href = 'movies.html';
+            }
+        });
+}
 
 function fetch_single_star() {
     if (!starId) {
