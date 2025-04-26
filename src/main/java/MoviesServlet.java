@@ -11,7 +11,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
-// import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 
 @WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
@@ -20,23 +23,53 @@ public class MoviesServlet extends HttpServlet {
 
     private static final List<String> ALLOWED_SORT_FIELDS = Arrays.asList("title", "rating");
     private static final List<String> ALLOWED_ORDERS = Arrays.asList("asc", "desc");
+    private static final List<Integer> ALLOWED_LIMITS = Arrays.asList(10, 25, 50, 100);
+    private static final int DEFAULT_LIMIT = 25;
+    private static final int DEFAULT_PAGE = 1;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("email") == null) {
-            response.sendRedirect("login.html");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\":\"User not logged in.\"}");
             return;
         }
 
         String genreFilter = request.getParameter("genre");
+        String title = request.getParameter("title");
+        String year = request.getParameter("year");
+        String director = request.getParameter("director");
+        String starName = request.getParameter("star_name");
 
         String sort1 = request.getParameter("sort1");
         String order1 = request.getParameter("order1");
         String sort2 = request.getParameter("sort2");
         String order2 = request.getParameter("order2");
 
+        int limit = DEFAULT_LIMIT;
+        int page = DEFAULT_PAGE;
+
+        try {
+            int requestedLimit = Integer.parseInt(request.getParameter("limit"));
+            if (ALLOWED_LIMITS.contains(requestedLimit)) {
+                limit = requestedLimit;
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            // Use default
+        }
+
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+            if (page < 1) {
+                page = DEFAULT_PAGE;
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            // Use default
+        }
+
+        int offset = (page - 1) * limit;
 
         String loginUser = "mytestuser";
         String loginPasswd = "My6$Password";
@@ -45,7 +78,8 @@ public class MoviesServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-
+        Gson gson = new Gson();
+        JsonObject jsonResponse = new JsonObject();
 
         try (Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
              Statement statement = connection.createStatement()) {
@@ -68,14 +102,14 @@ public class MoviesServlet extends HttpServlet {
             String topStarsPerMovieCTE = "TopStarsPerMovie AS ( " +
                     "    SELECT " +
                     "        movieId, " +
-                    "        GROUP_CONCAT(CONCAT(starId, ':', starName) ORDER BY rn SEPARATOR ',') AS topStars " +
+                    "        GROUP_CONCAT(CONCAT(starId, ':', starName) ORDER BY rn SEPARATOR ', ') AS topStars " +
                     "    FROM RankedStars " +
                     "    WHERE rn <= 3 " +
                     "    GROUP BY movieId " +
                     ") ";
 
             String mainQuerySelect = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                    "       GROUP_CONCAT(DISTINCT g_main.name ORDER BY g_main.name SEPARATOR ',') AS genres, " +
+                    "       GROUP_CONCAT(DISTINCT g_main.name ORDER BY g_main.name SEPARATOR ', ') AS genres, " +
                     "       tspm.topStars AS stars " +
                     "FROM movies m " +
                     "JOIN ratings r ON m.id = r.movieId " +
@@ -83,148 +117,129 @@ public class MoviesServlet extends HttpServlet {
                     "LEFT JOIN genres g_main ON gm_main.genreId = g_main.id " +
                     "LEFT JOIN TopStarsPerMovie tspm ON m.id = tspm.movieId ";
 
-            String whereConditions = "";
+            List<String> conditions = new ArrayList<>();
+            String whereClause = "";
 
             if (genreFilter != null && !genreFilter.trim().isEmpty()) {
                 mainQuerySelect += " JOIN genres_in_movies gm_filter ON m.id = gm_filter.movieId " +
                         " JOIN genres g_filter ON gm_filter.genreId = g_filter.id ";
-                whereConditions += "g_filter.name = '" + escapeSQL(genreFilter) + "' ";
+                conditions.add("g_filter.name = '" + escapeSQL(genreFilter.trim()) + "'");
             }
-
-            String title = request.getParameter("title");
-            String year = request.getParameter("year");
-            String director = request.getParameter("director");
-            String starName = request.getParameter("star_name");
-
             if (title != null && !title.trim().isEmpty()) {
-                if (!whereConditions.isEmpty()) whereConditions += "AND ";
-                whereConditions += "m.title LIKE '%" + escapeSQL(title.trim()) + "%' ";
+                conditions.add("m.title LIKE '%" + escapeSQL(title.trim()) + "%'");
             }
-
             if (year != null && !year.trim().isEmpty()) {
-                if (!whereConditions.isEmpty()) whereConditions += "AND ";
-                whereConditions += "m.year = " + escapeSQL(year.trim()) + " ";
+                if (year.trim().matches("\\d{4}")) {
+                    conditions.add("m.year = " + year.trim());
+                }
             }
-
             if (director != null && !director.trim().isEmpty()) {
-                if (!whereConditions.isEmpty()) whereConditions += "AND ";
-                whereConditions += "m.director LIKE '%" + escapeSQL(director.trim()) + "%' ";
+                conditions.add("m.director LIKE '%" + escapeSQL(director.trim()) + "%'");
             }
-
             if (starName != null && !starName.trim().isEmpty()) {
-                if (!whereConditions.isEmpty()) whereConditions += "AND ";
-                whereConditions += "EXISTS (SELECT 1 FROM stars_in_movies sm " +
-                        "JOIN stars s ON sm.starId = s.id " +
-                        "WHERE sm.movieId = m.id AND s.name LIKE '%" + escapeSQL(starName.trim()) + "%') ";
+                conditions.add("EXISTS (SELECT 1 FROM stars_in_movies sim_check " +
+                        "JOIN stars s_check ON sim_check.starId = s_check.id " +
+                        "WHERE sim_check.movieId = m.id AND s_check.name LIKE '%" + escapeSQL(starName.trim()) + "%')");
             }
 
-            String whereClause = "";
-            if (!whereConditions.isEmpty()) {
-                whereClause = "WHERE " + whereConditions;
+            if (!conditions.isEmpty()) {
+                whereClause = "WHERE " + String.join(" AND ", conditions) + " ";
             }
-
 
             String groupByClause = "GROUP BY m.id, m.title, m.year, m.director, r.rating, tspm.topStars ";
 
             StringBuilder orderByBuilder = new StringBuilder("ORDER BY ");
             boolean firstSortParam = true;
-
             if (isValidSortParam(sort1, order1)) {
-                orderByBuilder.append(getColumnForSortField(sort1)).append(" ").append(order1);
+                orderByBuilder.append(getColumnForSortField(sort1)).append(" ").append(order1.toLowerCase());
                 firstSortParam = false;
             }
-
             if (isValidSortParam(sort2, order2)) {
-                if (!firstSortParam) {
-                    orderByBuilder.append(", ");
+                if (!firstSortParam) orderByBuilder.append(", ");
+                if (!getColumnForSortField(sort1).equalsIgnoreCase(getColumnForSortField(sort2))) {
+                    orderByBuilder.append(getColumnForSortField(sort2)).append(" ").append(order2.toLowerCase());
+                    firstSortParam = false;
+                } else if (firstSortParam) {
+                    orderByBuilder.append(getColumnForSortField(sort2)).append(" ").append(order2.toLowerCase());
+                    firstSortParam = false;
                 }
-                orderByBuilder.append(getColumnForSortField(sort2)).append(" ").append(order2);
-                firstSortParam = false;
             }
-
             if (firstSortParam) {
                 orderByBuilder.append("r.rating DESC, m.title ASC");
             }
             String orderByClause = orderByBuilder.toString() + " ";
 
-
-            String limitClause = "LIMIT 20;";
+            String limitOffsetClause = "LIMIT " + limit + " OFFSET " + offset;
 
             String finalQuery = starMovieCountsCTE + rankedStarsCTE + topStarsPerMovieCTE +
                     mainQuerySelect +
                     whereClause +
                     groupByClause +
                     orderByClause +
-                    limitClause;
+                    limitOffsetClause + ";";
 
-            System.out.println("Executing Query: " + finalQuery);
+            System.out.println("Executing Query (" + limit + " results, page " + page + "): " + finalQuery);
 
             ResultSet resultSet = statement.executeQuery(finalQuery);
-
-            StringBuilder jsonBuilder = new StringBuilder();
-            jsonBuilder.append("{\"movies\":[");
-
-            boolean first = true;
+            JsonArray moviesArray = new JsonArray();
+            int resultsCount = 0;
             while (resultSet.next()) {
-                if (!first) {
-                    jsonBuilder.append(", ");
+                resultsCount++;
+                JsonObject movieJson = new JsonObject();
+                movieJson.addProperty("id", resultSet.getString("id"));
+                movieJson.addProperty("title", resultSet.getString("title"));
+                movieJson.addProperty("year", resultSet.getInt("year"));
+                movieJson.addProperty("director", resultSet.getString("director"));
+                double rating = resultSet.getDouble("rating");
+                if (!resultSet.wasNull()) {
+                    movieJson.addProperty("rating", rating);
+                } else {
+                    movieJson.addProperty("rating", "N/A");
                 }
-                first = false;
+                movieJson.addProperty("genres", resultSet.getString("genres"));
+                movieJson.addProperty("stars", resultSet.getString("stars"));
 
-                jsonBuilder.append("{")
-                        .append("\"id\":\"").append(escapeJson(resultSet.getString("id"))).append("\",")
-                        .append("\"title\":\"").append(escapeJson(resultSet.getString("title"))).append("\",")
-                        .append("\"year\":").append(resultSet.getInt("year")).append(",")
-                        .append("\"director\":\"").append(escapeJson(resultSet.getString("director"))).append("\",")
-                        .append("\"rating\":").append(resultSet.getDouble("rating")).append(",")
-                        .append("\"genres\":\"").append(escapeJson(resultSet.getString("genres"))).append("\",")
-                        .append("\"stars\":\"").append(escapeJson(resultSet.getString("stars"))).append("\"")
-                        .append("}");
+                moviesArray.add(movieJson);
             }
+            resultSet.close();
 
-            jsonBuilder.append("]}");
-            out.write(jsonBuilder.toString());
+            jsonResponse.add("movies", moviesArray);
+            jsonResponse.addProperty("currentPage", page);
+            jsonResponse.addProperty("limit", limit);
+            jsonResponse.addProperty("hasMoreResults", resultsCount == limit);
+
+            out.write(gson.toJson(jsonResponse));
 
         } catch (Exception e) {
             request.getServletContext().log("Error fetching movies: ", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write("{\"error\":\"An internal error occurred: " + escapeJson(e.getMessage()) + "\"}");
-        } finally {
-            if (out != null) {
-                out.close();
-            }
+            JsonObject errorResponse = new JsonObject();
+            errorResponse.addProperty("error", "An internal error occurred while fetching movies.");
+            errorResponse.addProperty("detail", e.getMessage());
+            out.write(gson.toJson(errorResponse));
         }
     }
 
     private boolean isValidSortParam(String field, String order) {
-        return field != null && order != null &&
+        return field != null && !field.trim().isEmpty() &&
+                order != null && !order.trim().isEmpty() &&
                 ALLOWED_SORT_FIELDS.contains(field.toLowerCase()) &&
                 ALLOWED_ORDERS.contains(order.toLowerCase());
     }
 
     private String getColumnForSortField(String field) {
-        if ("title".equalsIgnoreCase(field)) {
+        if (field == null) return "r.rating";
+        String lowerField = field.toLowerCase();
+        if ("title".equals(lowerField)) {
             return "m.title";
-        } else if ("rating".equalsIgnoreCase(field)) {
+        } else if ("rating".equals(lowerField)) {
             return "r.rating";
         }
         return "r.rating";
     }
 
-
-    private String escapeJson(String s) {
-        if (s == null) return "";
-        return s.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\b", "\\b")
-                .replace("\f", "\\f")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
-
     private String escapeSQL(String s) {
         if (s == null) return "";
-        return s.replace("'", "''");
+        return s.replace("'", "''").replace("\\", "\\\\");
     }
 }

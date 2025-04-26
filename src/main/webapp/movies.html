@@ -5,9 +5,13 @@
     <title>Movies Page</title>
     <link rel="stylesheet" href="movies.css">
     <style>
-        #sort-controls { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        #sort-controls { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px;}
         #sort-controls label { margin-right: 5px; }
-        #sort-controls select, #sort-controls button { margin-right: 15px; padding: 5px; }
+        #sort-controls select, #sort-controls button { padding: 5px; }
+        #pagination-controls { margin-top: 15px; text-align: center; }
+        #pagination-controls button { padding: 5px 10px; margin: 0 10px; cursor: pointer;}
+        #pagination-controls button:disabled { cursor: not-allowed; opacity: 0.6; }
+        #results-per-page-control { margin-left: auto; /* Pushes this control to the right */ }
     </style>
 </head>
 
@@ -37,30 +41,42 @@
     </form>
 </section>
 
+
 <section id="sort-controls">
-    <h2>Sort Movies</h2>
-    <label for="sort1-field">Sort by:</label>
-    <select id="sort1-field" name="sort1">
-        <option value="rating">Rating</option>
-        <option value="title">Title</option>
-    </select>
-    <label for="sort1-order"></label><select id="sort1-order" name="order1">
-        <option value="desc">Descending</option>
-        <option value="asc">Ascending</option>
-    </select>
-
-    <label for="sort2-field">Then by:</label>
-    <select id="sort2-field" name="sort2">
-        <option value="none">None</option>
-        <option value="rating">Rating</option>
-        <option value="title">Title</option>
-    </select>
-    <label for="sort2-order"></label><select id="sort2-order" name="order2">
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-    </select>
-
+    <div>
+        <label for="sort1-field">Sort by:</label>
+        <select id="sort1-field" name="sort1">
+            <option value="rating">Rating</option>
+            <option value="title">Title</option>
+        </select>
+        <label for="sort1-order"></label><select id="sort1-order" name="order1">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+        </select>
+    </div>
+    <div>
+        <label for="sort2-field">Then by:</label>
+        <select id="sort2-field" name="sort2">
+            <option value="none">None</option>
+            <option value="rating">Rating</option>
+            <option value="title">Title</option>
+        </select>
+        <label for="sort2-order"></label><select id="sort2-order" name="order2">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+    </div>
     <button id="apply-sort-button" type="button">Apply Sort</button>
+
+    <div id="results-per-page-control">
+        <label for="results-per-page">Show:</label>
+        <select id="results-per-page" name="limit">
+            <option value="10">10</option>
+            <option value="25" selected>25</option> <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+        <span> results per page</span>
+    </div>
 </section>
 
 
@@ -78,6 +94,11 @@
     <tbody>
     </tbody>
 </table>
+
+<div id="pagination-controls">
+    <button id="prev-button" disabled>Previous</button>
+    <span id="page-info">Page 1</span> <button id="next-button" disabled>Next</button>
+</div>
 
 <div id="movies-details" style="display: block;"> <p>Loading movies...</p>
 </div>
