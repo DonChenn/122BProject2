@@ -1,9 +1,10 @@
 Group Members:
 
 Donovan Chen
-- Worked on the "Top 20 Movies List" page and configured and demonstrated the website on AWS
+- Task 1 & Task 3
+- CSS for all pages
   
 Jake Silverman
-- Worked on the "Single Movie" and "Single Star" page and did CSS for the pages
+- Task 2 & Task 4
 
-Demonstration Video: https://youtu.be/gA-Bn4CHWns
+Demonstration Video: https://www.youtube.com/watch?v=0heDfJhsXE4
