@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="shopping-cart.css">
+    <style>
+        .confirmation-container {
+            text-align: center;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        .confirmation-container h1 {
+            color: #28a745;
+        }
+        .confirmation-container p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        .confirmation-container a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .confirmation-container a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <a href="movies.html"><img src="images/logo.png" alt="Logo" class="nav-logo"></a>
+        <ul>
+            <li><a href="movies.html"> MOVIES </a></li>
+            <li><a class="nav-link" href="shopping-cart.html">CHECKOUT</a></li>
+            <li><button id="logout-link">LOGOUT</button></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="confirmation-container">
+    <h1>Order Confirmed!</h1>
+    <p>Thank you for your purchase. Your order has been placed successfully.</p>
+    <a href="movies.html">Continue Shopping</a>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="module" src="./auth.js">
+    import { verify_login } from './auth.js';
+    verify_login();
+</script>
+<script src="logout.js"></script>
+
+</body>
+</html>

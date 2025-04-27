@@ -51,6 +51,15 @@
         <url-pattern>/api/shopping-cart</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>PaymentServlet</servlet-name>
+        <servlet-class>PaymentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PaymentServlet</servlet-name>
+        <url-pattern>/api/place-order</url-pattern>
+    </servlet-mapping>
+
     <!-- Register the DataSource for MySQL database (if you're using it) -->
     <resource-ref>
         <description>MySQL DataSource</description>
