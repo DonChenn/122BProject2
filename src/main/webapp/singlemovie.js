@@ -138,10 +138,8 @@ function fetch_single_movie() {
                 genresHTML = movie.genres.split(',')
                     .map(genre => {
                         const parts = genre.split(':');
-                        let id = null;
                         let name = '';
                         if (parts.length >= 2) {
-                            id = parts[0].trim();
                             name = parts.slice(1).join(':').trim();
                         } else if (parts.length === 1) {
                             name = parts[0].trim();
