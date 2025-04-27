@@ -22,10 +22,8 @@ function getUrlParams() {
 function buildUpdatedUrl(newParams) {
     const urlParams = getUrlParams();
 
-    // Remove any old title/year/director/star_name search if browsing
     ['title', 'year', 'director', 'star_name', 'genre', 'titleInitial'].forEach(param => urlParams.delete(param));
 
-    // Apply new browsing params
     for (const key in newParams) {
         urlParams.set(key, newParams[key]);
     }

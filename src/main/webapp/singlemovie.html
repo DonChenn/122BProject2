@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Movie Details</title>
     <link rel="stylesheet" href="singlemovie.css">
 </head>
+
 <body>
+<header>
+    <nav>
+        <a href="movies.html"><img src="images/logo.png" alt="Logo" class="nav-logo"></a>
+        <ul>
+            <li><a href="movies.html">MOVIES</a></li>
+            <li><a href="#">CHECKOUT</a></li>
+        </ul>
+        <button id="logout-link">LOGOUT</button>
+    </nav>
+</header>
 
-<a id="back-to-list-link" href="#">&larr; Back to Movie List</a>
-
-<div id="movie-details">
-    <p>Loading movie info...</p>
+<div id="content-wrapper">
+    <a id="back-to-list-link" href="#">&larr; Back to Movie List</a>
+    <div id="movie-details-wrapper">
+        <div id="movie-details">
+            <p>Loading movie info...</p>
+        </div>
+    </div>
 </div>
 
 <script type="module" src='singlemovie.js'></script>
 
 </body>
+
 </html>
