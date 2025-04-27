@@ -368,13 +368,22 @@ if(searchForm) {
     });
 }
 
-if(resetButton) {
+if (resetButton) {
     resetButton.addEventListener("click", function() {
-        if(searchForm) searchForm.reset();
+        if (searchForm) searchForm.reset();
+
         const urlParams = getUrlParams();
         const currentPagination = getCurrentPaginationParams(urlParams);
-        const baseParams = { limit: currentPagination.limit, page: 1, sort1: 'rating', order1: 'desc', sort2: 'title', order2: 'asc' };
-        window.location.search = buildUpdatedUrl(baseParams);
+
+        const resetUrlParams = new URLSearchParams();
+        resetUrlParams.set('limit', currentPagination.limit);
+        resetUrlParams.set('page', '1');
+        resetUrlParams.set('sort1', 'rating');
+        resetUrlParams.set('order1', 'desc');
+        resetUrlParams.set('sort2', 'title');
+        resetUrlParams.set('order2', 'asc');
+
+        window.location.search = resetUrlParams.toString();
     });
 }
 
