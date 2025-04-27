@@ -3,7 +3,6 @@ body {
     margin: 0;
     background-color: hotpink;
     color: #333;
-    padding: 20px 20px 50px;
 }
 
 header {
@@ -178,11 +177,6 @@ h1 {
     text-align: right;
     margin-top: 20px;
     margin-bottom: 20px;
-}
-
-.payment-button .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
 }
 
 .payment-button .btn-primary:hover {
