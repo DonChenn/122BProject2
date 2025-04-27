@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @WebServlet(name = "AddToCartServlet", urlPatterns = "/api/add-to-cart")
 public class AddToCartServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
