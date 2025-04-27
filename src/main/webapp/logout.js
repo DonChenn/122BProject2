@@ -2,7 +2,6 @@ document.getElementById("logout-link").addEventListener("click", function(event)
     event.preventDefault();
     console.log("Logout clicked");
 
-    // Try with a full URL path
     fetch("/fabflix_war/logout", {
         method: "GET",
         credentials: "same-origin"

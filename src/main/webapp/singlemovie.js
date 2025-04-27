@@ -1,5 +1,5 @@
 import { verify_login } from './auth.js';
-// verify_login();
+verify_login();
 
 const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get("id");
