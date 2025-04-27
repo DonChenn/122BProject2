@@ -8,17 +8,25 @@ body {
     margin: 0;
 }
 
+.login-logo {
+    display: block;
+    margin: 0 auto 20px;
+    width: 100px;
+    height: auto;
+}
+
 .login-container {
     background-color: #ffffff;
-    padding: 30px 40px;
+    padding: 30px 30px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    width: 320px;
+    width: 30vw;
+    height: 30vw;
     box-sizing: border-box;
 }
 
 .login-container h1 {
-    color: #333;
+    color: black;
     text-align: center;
     margin-top: 0;
     margin-bottom: 25px;
@@ -69,4 +77,23 @@ body {
     font-weight: bold;
     min-height: 1.2em;
     text-align: center;
+}
+
+.login-container p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #777;
+    white-space: nowrap;
+}
+
+.login-container p a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-container p a:hover {
+    color: #0056b3;
+    text-decoration: underline;
 }

@@ -10,7 +10,6 @@ header {
     background-color: #1a73e8;
     padding: 10px 0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    position: sticky;
     top: 0;
     z-index: 1000;
     width: 100%;
@@ -26,21 +25,19 @@ nav ul {
     padding: 0 20px;
     position: relative;
     min-height: 40px;
+    flex-grow: 1;
 }
 
-nav a {
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 10px 5px;
-    display: inline-block;
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-nav a:hover, nav a:focus {
-    text-decoration: underline;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+.nav-logo {
+    width: 35px;
+    height: auto;
+    margin-left: 20px;
 }
 
 #logout-link {
@@ -62,6 +59,26 @@ nav a:hover, nav a:focus {
 #logout-link:hover, #logout-link:focus {
     background-color: darkred;
     text-decoration: none;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 5px;
+    display: inline-block;
+}
+
+nav a:hover, nav a:focus {
+    text-decoration: underline;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
 }
 
 h1, h2, h3 {
@@ -306,4 +323,3 @@ td a:hover, td a:focus {
     display: inline-block;
     vertical-align: middle;
 }
-
