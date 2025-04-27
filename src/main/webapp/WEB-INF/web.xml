@@ -33,6 +33,24 @@
         <url-pattern>/api/movies</url-pattern> <!-- Maps the /api/movies URL to the MoviesServlet -->
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <servlet-class>AddToCartServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <url-pattern>/api/add-to-cart</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ShoppingCartServlet</servlet-name>
+        <servlet-class>ShoppingCartServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ShoppingCartServlet</servlet-name>
+        <url-pattern>/api/shopping-cart</url-pattern>
+    </servlet-mapping>
+
     <!-- Register the DataSource for MySQL database (if you're using it) -->
     <resource-ref>
         <description>MySQL DataSource</description>
