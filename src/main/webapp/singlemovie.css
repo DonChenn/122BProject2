@@ -1,8 +1,8 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: SansSerif, sans-serif;
     margin: 0;
     padding: 40px;
-    background-color: #eef2f5;
+    background-color: hotpink;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -14,8 +14,9 @@ body {
     top: 10px;
     left: 10px;
     font-size: 16px;
-    color: #1a73e8;
+    color: black;
     text-decoration: none;
+    font-weight: bold;
 }
 
 #back-to-list-link:hover {

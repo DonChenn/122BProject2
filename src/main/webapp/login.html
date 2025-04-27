@@ -3,28 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Login Page</title>
-    <style>
-        #message {
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="login.css">
 </head>
-<body>
-<h1>Login</h1>
 
-<form id="login-form">
-    Email: <input type="text" name="email" id="email" required><br>
-    Password: <input type="password" name="password" id="password" required><br>
-    <input type="submit" value="Login">
-</form>
+<body> <div class="login-container">
+    <h1>Login</h1>
 
-<div id="message"></div>
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="text" name="email" id="email" required>
 
-<script>
-</script>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
 
-<script src="login.js"></script>
+        <input type="submit" value="Login">
+    </form>
 
-</body>
-</html>
+    <div id="message"></div>
+
+</div> <script src="login.js"></script>
+
+</body> </html>

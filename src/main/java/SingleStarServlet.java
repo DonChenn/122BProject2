@@ -65,7 +65,8 @@ public class SingleStarServlet extends HttpServlet {
                     "SELECT m.id AS movieId, m.title AS movieTitle, m.year, m.director " +
                             "FROM stars_in_movies sm " +
                             "JOIN movies m ON sm.movieId = m.id " +
-                            "WHERE sm.starId = ?";
+                            "WHERE sm.starId = ?" +
+                            "ORDER BY m.year DESC, m.title ASC";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, starId);
