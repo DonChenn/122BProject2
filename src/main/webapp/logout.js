@@ -2,7 +2,7 @@ document.getElementById("logout-link").addEventListener("click", function(event)
     event.preventDefault();
     console.log("Logout clicked");
 
-    fetch("/fabflix_war/logout", {
+    fetch("/fabflix/logout", {
         method: "GET",
         credentials: "same-origin"
     })
