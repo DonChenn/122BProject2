@@ -21,7 +21,7 @@ form.addEventListener("submit", function (event) {
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
-                window.location.href = "/fabflix_war/movies.html";
+                window.location.href = "/fabflix/movies.html";
             } else {
                 messageBox.textContent = data.message;
             }
